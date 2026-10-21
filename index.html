@@ -93,6 +93,7 @@
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
     .pcard { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
     .pcard.top { border: 1.5px solid var(--brand); }
+    .best { align-self: flex-start; font-size: 12px; font-weight: 800; color: var(--brand); background: var(--brand-soft); padding: 3px 9px; border-radius: 999px; display: inline-flex; align-items: center; gap: 4px; }
     .pcard-head { display: flex; align-items: flex-start; gap: 8px; }
     .pcard-title { flex: 1; display: flex; flex-direction: column; gap: 4px; }
     .org { font-size: 12px; color: var(--muted); }
@@ -491,6 +492,11 @@
       const card = el("article", "pcard" + (top ? " top" : ""));
       const head = el("div", "pcard-head");
       const title = el("div", "pcard-title");
+      if (top) {
+        const best = el("span", "best");
+        best.append(svgIcon(ICON.check, 12), document.createTextNode("가장 잘 맞아요"));
+        title.append(best);
+      }
       title.append(el("span", "org", [p.주관기관, p.분야].filter(Boolean).join(" · ")), el("h3", "", p.정책명));
       head.append(title, saveButton(p));
       card.append(head, el("p", "gist", gist(p)));
@@ -551,7 +557,8 @@
       } else {
         checks.push(["ok", "나이", range ? `만 ${range[0]}~${range[1]}세가 대상이에요` : "나이 제한이 없어요"]);
       }
-      checks.push(["ok", "지역", p.지역 === "전국" ? "전국 어디서나 신청할 수 있어요" : `${p.지역} 거주자가 대상이에요`]);
+      if (p.지역 === "여러 지역") checks.push(["ask", "지역", "여러 지역이 대상이에요. 내 지역이 포함되는지 원문에서 확인해 주세요"]);
+      else checks.push(["ok", "지역", p.지역 === "전국" ? "전국 어디서나 신청할 수 있어요" : `${p.지역} 거주자가 대상이에요`]);
       checks.push(["ask", "소득·자산 등", "세부 조건은 원문에서 꼭 확인해 주세요"]);
       $("#detail-check").replaceChildren(...checks.map(([kind, label, text]) => {
         const row = el("div", "check");

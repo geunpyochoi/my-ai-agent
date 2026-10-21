@@ -291,16 +291,23 @@ function relevance(p, terms) {
   return score;
 }
 
-// 지역을 골랐을 때 보여줄 순서: 그 지역 전용 정책 → 중앙부처 정책 → 다른 지역이 낸 전국 대상 정책
+// 전국 대상은 아니지만 대상 시·도가 둘 이상인 정책 (예: 다른 지역 기관이 여러 시·도를 대상으로 등록한 정책)
+function isMultiRegion(p) {
+  return !p.national && p.sidos.length > 1;
+}
+
+// 지역을 골랐을 때 보여줄 순서: 그 지역 전용 정책 → 중앙부처 정책 → 여러 지역 대상 정책 → 다른 지역이 낸 전국 대상 정책
 function regionTier(p, sido) {
   if (!sido) return 0;
-  if (!p.national && p.sidos.includes(sido)) return 0;
+  if (!p.national && p.sidos.length === 1 && p.sidos[0] === sido) return 0;
   if (p.central) return 1;
-  return 2;
+  if (isMultiRegion(p)) return 2;
+  return 3;
 }
 
 function regionLabel(p, sido) {
   if (p.national) return "전국";
+  if (isMultiRegion(p)) return "여러 지역";
   if (sido && p.sidos.includes(sido)) return shortRegion(sido);
   return p.sidos.length ? shortRegion(p.sidos[0]) : "";
 }
@@ -451,4 +458,4 @@ module.exports = async (req, res) => {
 };
 
 // 로컬 테스트용 (Vercel은 module.exports만 사용)
-module.exports._internal = { fromPortal, fromOfficial, fitsRegion, fitsAge, isOpen, relevance, expandTerms, summarize, regionLabel, findPolicyList, findPaging, todayYmd };
+module.exports._internal = { fromPortal, fromOfficial, fitsRegion, fitsAge, isOpen, relevance, expandTerms, summarize, regionLabel, regionTier, findPolicyList, findPaging, todayYmd };
