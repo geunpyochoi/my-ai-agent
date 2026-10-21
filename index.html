@@ -28,7 +28,7 @@
     body {
       margin: 0; background: var(--bg); color: var(--fg); line-height: 1.6;
       font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
-      -webkit-font-smoothing: antialiased; word-break: keep-all;
+      -webkit-font-smoothing: antialiased; word-break: keep-all; overflow-x: clip;
     }
     .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
 
@@ -137,8 +137,8 @@
       width: 100%; height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg);
       font: inherit; font-size: 16px; padding: 0 12px;
     }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chips input { position: absolute; opacity: 0; pointer-events: none; }
+    .chips { position: relative; display: flex; flex-wrap: wrap; gap: 6px; }
+    .chips input { position: absolute; left: 0; top: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
     .chips label {
       margin: 0; height: 48px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 12px; cursor: pointer;
       border: 1px solid var(--line); background: var(--bg); color: var(--fg); font-size: 15px; font-weight: 600;
