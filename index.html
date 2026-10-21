@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lecture_1021</title>
+  <style>
+    :root { --bg: #f7f7f5; --fg: #1a1a1a; --muted: #6b6b6b; --accent: #2f6fed; }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #141414; --fg: #f0f0f0; --muted: #9a9a9a; --accent: #6b9bff; }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: var(--bg); color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", sans-serif;
+      padding: 16px;
+    }
+    main { text-align: center; max-width: 520px; }
+    .tag { display: inline-block; font-size: 13px; color: var(--accent); border: 1px solid var(--accent);
+           border-radius: 999px; padding: 4px 12px; margin-bottom: 20px; }
+    h1 { font-size: clamp(32px, 8vw, 48px); margin: 0 0 12px; letter-spacing: -0.02em; }
+    p { color: var(--muted); line-height: 1.6; margin: 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <span class="tag">my-ai-agent</span>
+    <h1>lecture_1021</h1>
+    <p>서비스 준비 중입니다. 곧 이 자리에 AI 에이전트 서비스가 들어옵니다.</p>
+  </main>
+</body>
+</html>
