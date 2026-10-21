@@ -132,6 +132,7 @@ function fromPortal(p) {
     applyMethod: p.PLCY_APLY_MTHD_CN,
     applyUrl: clean(p.APLY_URL_ADDR) || clean(p.REF_URL_ADDR1),
     sidos,
+    central: p.PVSN_INST_GROUP_CD === CENTRAL_GOV,
     national: p.PVSN_INST_GROUP_CD === CENTRAL_GOV || sidos.length >= NATIONWIDE_SIDO_COUNT,
     views: Number(p.INQ_CNT) || 0,
   };
@@ -159,6 +160,7 @@ function fromOfficial(p) {
     applyMethod: p.plcyAplyMthdCn,
     applyUrl: clean(p.aplyUrlAddr) || clean(p.refUrlAddr1),
     sidos,
+    central: p.pvsnInstGroupCd === CENTRAL_GOV,
     national: p.pvsnInstGroupCd === CENTRAL_GOV || sidos.length >= NATIONWIDE_SIDO_COUNT,
     views: Number(p.inqCnt) || 0,
   };
@@ -289,6 +291,14 @@ function relevance(p, terms) {
   return score;
 }
 
+// 지역을 골랐을 때 보여줄 순서: 그 지역 전용 정책 → 중앙부처 정책 → 다른 지역이 낸 전국 대상 정책
+function regionTier(p, sido) {
+  if (!sido) return 0;
+  if (!p.national && p.sidos.includes(sido)) return 0;
+  if (p.central) return 1;
+  return 2;
+}
+
 function regionLabel(p, sido) {
   if (p.national) return "전국";
   if (sido && p.sidos.includes(sido)) return shortRegion(sido);
@@ -338,16 +348,16 @@ async function callTool(name, args = {}) {
         .filter((p) => isOpen(p, today) && fitsAge(p, age) && fitsRegion(p, sido))
         .map((p) => ({ p, score: terms.length ? relevance(p, terms) : 0 }))
         .filter(({ score }) => !terms.length || score > 0)
-        // 같은 점수라면 지역 맞춤 정책을 전국 정책보다 먼저, 그다음 조회수순
-        .sort((a, b) => b.score - a.score || (sido ? a.p.national - b.p.national : 0) || b.p.views - a.p.views)
+        // 같은 점수라면 지역 순서(regionTier), 그다음 조회수순
+        .sort((a, b) => b.score - a.score || regionTier(a.p, sido) - regionTier(b.p, sido) || b.p.views - a.p.views)
         .map(({ p }) => p);
       source = "온통청년 공식 Open API";
     } else {
-      // 관련도순은 유지하되, 지역을 골랐다면 그 지역 전용 정책을 전국 정책보다 먼저 보여준다
+      // 관련도순은 유지하되, 지역을 골랐다면 regionTier 순서로 묶어서 보여준다
       items = (await searchPortal({ keyword, region: args.region }))
         .filter((p) => isOpen(p, today) && fitsAge(p, age) && fitsRegion(p, sido))
         .map((p, rank) => ({ p, rank }))
-        .sort((a, b) => (sido ? a.p.national - b.p.national : 0) || a.rank - b.rank)
+        .sort((a, b) => regionTier(a.p, sido) - regionTier(b.p, sido) || a.rank - b.rank)
         .map(({ p }) => p);
       source = "온통청년 통합검색";
     }
