@@ -194,6 +194,15 @@ module.exports = async (req, res) => {
   }
   if (!body) return res.status(400).json({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
 
+  // MCP를 지원하지 않는 클라이언트(ElevenLabs 웹훅 도구 등)는 ?tool=이름 으로 같은 도구를 바로 호출한다
+  if (req.query && req.query.tool && !body.jsonrpc) {
+    try {
+      return res.status(200).json(await callTool(req.query.tool, body));
+    } catch (err) {
+      return res.status(err.code === -32602 ? 404 : 502).json({ error: err.message });
+    }
+  }
+
   const messages = Array.isArray(body) ? body : [body];
   const replies = (await Promise.all(messages.map(handleMessage))).filter(Boolean);
   if (!replies.length) return res.status(202).end();
