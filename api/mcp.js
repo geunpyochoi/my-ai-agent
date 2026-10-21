@@ -2,6 +2,8 @@
 // 의존성 없이 Vercel Node 함수 하나로 동작한다. 엔드포인트: POST /api/mcp
 
 const SEARCH_URL = "https://www.youthcenter.go.kr/pubot/search/portalPolicySearch";
+const DETAIL_URL = "https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/";
+const CENTRAL_GOV = "0054001";
 const PROTOCOL_VERSION = "2025-06-18";
 const SERVER_INFO = { name: "youth-policy-mcp", version: "1.0.0" };
 
@@ -67,7 +69,8 @@ function fmtDate(s) {
   return s && s.length === 8 ? `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6)}` : "";
 }
 
-async function searchPolicies({ keyword = "", region = "", listCount = 100 }) {
+// 검색어가 있으면 관련도순, 없으면 조회수순으로 받는다 (기본값인 등록일순은 엉뚱한 결과가 위에 온다)
+async function searchPolicies({ keyword = "", region = "", listCount = 100, sortFields }) {
   const res = await fetch(SEARCH_URL, {
     method: "POST",
     headers: {
@@ -79,7 +82,7 @@ async function searchPolicies({ keyword = "", region = "", listCount = 100 }) {
       query: keyword,
       STDG_CTPV_NM: normalizeRegion(region),
       pageNum: 1,
-      sortFields: "DATE/DESC",
+      sortFields: sortFields || (keyword ? "RANK/DESC" : "INQ_CNT/DESC"),
       listCount,
       searchFields: "all",
     }),
@@ -108,13 +111,15 @@ function summarize(p) {
   return {
     정책명: clean(p.PLCY_NM),
     분야: clean(p.USER_CLSF_NM),
-    지역: cut(p.STDG_NM, 40),
+    지역: p.PVSN_INST_GROUP_CD === CENTRAL_GOV ? "전국" : cut(p.STDG_NM.split(",")[0], 40),
     주관기관: clean(p.SPRVSN_INST_CD_NM),
     신청기간: start || end ? `${clean(p.APLY_PRD_SE_CD)} (${start} ~ ${end})` : clean(p.APLY_PRD_SE_CD) || "정보 없음",
     지원연령: ageText,
     지원내용: cut(p.PLCY_SPRT_CN || p.PLCY_EXPLN_CN, 300),
     신청방법: cut(p.PLCY_APLY_MTHD_CN, 200),
     신청링크: clean(p.APLY_URL_ADDR) || clean(p.REF_URL_ADDR1),
+    상세링크: DETAIL_URL + p.DOCID,
+    마감일: fmtDate(p.APLY_PRD_END_YMD),
   };
 }
 
@@ -136,7 +141,7 @@ async function callTool(name, args = {}) {
     const today = new Date();
     const until = new Date(today.getTime() + days * 86400000);
     const [from, to] = [ymd(today), ymd(until)];
-    const items = (await searchPolicies({ region: args.region, listCount: 1000 }))
+    const items = (await searchPolicies({ region: args.region, listCount: 1000, sortFields: "DATE/DESC" }))
       .filter(isOpen)
       .filter((p) => p.APLY_PRD_END_YMD >= from && p.APLY_PRD_END_YMD <= to)
       .sort((a, b) => a.APLY_PRD_END_YMD.localeCompare(b.APLY_PRD_END_YMD))

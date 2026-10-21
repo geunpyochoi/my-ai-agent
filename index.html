@@ -54,6 +54,8 @@
     h1 em { font-style: normal; color: var(--brand); }
     .hero p { font-size: 18px; color: var(--muted); margin: 0 0 28px; }
     .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .text-link { display: inline-block; margin-top: 16px; color: var(--brand); font-weight: 700; font-size: 15px; text-decoration: none; }
+    .text-link:hover { text-decoration: underline; }
     .trust { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 14px; color: var(--muted); }
     .trust span::before { content: "✓ "; color: var(--brand); font-weight: 800; }
 
@@ -127,6 +129,53 @@
     footer { padding: 40px 0 120px; color: var(--muted); font-size: 13px; }
     footer a { color: inherit; }
 
+    /* 1분 맞춤 찾기 */
+    .finder { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 24px; box-shadow: var(--shadow); }
+    .finder form { display: grid; grid-template-columns: 140px 200px 1fr auto; gap: 12px; align-items: end; }
+    .field label { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .field input, .field select {
+      width: 100%; height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+      font: inherit; font-size: 16px; padding: 0 12px;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chips input { position: absolute; opacity: 0; pointer-events: none; }
+    .chips label {
+      margin: 0; height: 48px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 12px; cursor: pointer;
+      border: 1px solid var(--line); background: var(--bg); color: var(--fg); font-size: 15px; font-weight: 600;
+    }
+    .chips input:checked + label { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+    .chips input:focus-visible + label { outline: 2px solid var(--brand); outline-offset: 2px; }
+    .finder .btn-primary { height: 48px; padding: 0 22px; }
+    .results-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 24px 0 12px; }
+    .results-head b { font-size: 16px; }
+    .results-head button { background: none; border: 0; color: var(--brand); font: inherit; font-weight: 700; cursor: pointer; padding: 0; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .pcard { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .pcard h3 { margin: 0; font-size: 17px; line-height: 1.4; letter-spacing: -0.02em; }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .badge { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); }
+    .badge.hot { background: #fff1ec; border-color: #ffd5c7; color: #d9480f; }
+    @media (prefers-color-scheme: dark) { .badge.hot { background: #3a2018; border-color: #5a2e20; color: #ff9e7a; } }
+    .pcard p { margin: 0; color: var(--muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .pcard .links { margin-top: auto; display: flex; gap: 8px; padding-top: 6px; }
+    .pcard .links a { font-size: 14px; font-weight: 700; text-decoration: none; padding: 8px 12px; border-radius: 10px; }
+    .pcard .links .primary { background: var(--brand); color: var(--brand-ink); }
+    .pcard .links .secondary { background: var(--surface); color: var(--fg); border: 1px solid var(--line); }
+    .skeleton { height: 170px; border-radius: 18px; background: linear-gradient(90deg, var(--line) 0%, var(--bg) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 18px; }
+    .finder-note { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+
+    /* 마감 임박 */
+    .closing { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+    .closing .pcard { background: var(--surface); scroll-snap-align: start; }
+    .dday { align-self: flex-start; font-size: 13px; font-weight: 800; color: #d9480f; }
+
+    @media (max-width: 860px) {
+      .finder form { grid-template-columns: 1fr 1fr; }
+      .finder .field-topic, .finder .btn-primary { grid-column: 1 / -1; }
+    }
+
     /* 안내 토스트 */
     .toast {
       position: fixed; left: 50%; bottom: 110px; transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none;
@@ -165,6 +214,7 @@
           <button class="btn btn-lg btn-primary" data-open="voice">🎙️ 음성으로 상담하기</button>
           <button class="btn btn-lg btn-ghost" data-open="chat">💬 채팅으로 물어보기</button>
         </div>
+        <a class="text-link" href="#finder">말하기 어렵다면? 조건만 골라 바로 찾기 →</a>
         <div class="trust"><span>무료</span><span>회원가입 없음</span><span>정부 공식 정책 정보 기반</span></div>
       </div>
 
@@ -183,6 +233,48 @@
         </div>
       </div>
     </div>
+
+    <section id="finder">
+      <h2 class="section-title">1분 맞춤 찾기</h2>
+      <p class="section-sub">말하기 어렵다면 조건만 골라 보세요. 지금 신청할 수 있는 정책을 바로 보여드려요.</p>
+      <div class="finder">
+        <form id="finder-form">
+          <div class="field">
+            <label for="f-age">나이 (만)</label>
+            <input id="f-age" name="age" type="number" inputmode="numeric" min="15" max="45" placeholder="예: 26" />
+          </div>
+          <div class="field">
+            <label for="f-region">사는 곳</label>
+            <select id="f-region" name="region">
+              <option value="">전국</option>
+              <option>서울</option><option>경기</option><option>인천</option><option>부산</option><option>대구</option>
+              <option>광주</option><option>대전</option><option>울산</option><option>세종</option><option>강원</option>
+              <option>충북</option><option>충남</option><option>전북</option><option>전남</option><option>경북</option>
+              <option>경남</option><option>제주</option>
+            </select>
+          </div>
+          <div class="field field-topic">
+            <label>관심 분야</label>
+            <div class="chips">
+              <input type="radio" name="topic" id="tp-all" value="" checked /><label for="tp-all">전체</label>
+              <input type="radio" name="topic" id="tp-house" value="주거" /><label for="tp-house">🏠 주거</label>
+              <input type="radio" name="topic" id="tp-job" value="취업" /><label for="tp-job">💼 일자리</label>
+              <input type="radio" name="topic" id="tp-edu" value="교육" /><label for="tp-edu">📚 교육</label>
+              <input type="radio" name="topic" id="tp-money" value="금융" /><label for="tp-money">💰 생활·금융</label>
+            </div>
+          </div>
+          <button class="btn btn-primary" type="submit">정책 찾기</button>
+        </form>
+        <div id="finder-results" aria-live="polite"></div>
+        <p class="finder-note">결과는 온통청년의 최신 공고에서 바로 가져와요. 자격 조건은 ‘자세히 보기’에서 꼭 확인해 주세요.</p>
+      </div>
+    </section>
+
+    <section id="closing-section">
+      <h2 class="section-title">⏰ 이번 주 마감 임박</h2>
+      <p class="section-sub">곧 신청이 끝나는 정책이에요. 놓치기 전에 확인해 보세요.</p>
+      <div class="closing" id="closing"></div>
+    </section>
 
     <section id="topics">
       <h2 class="section-title">이런 고민, 바로 물어보세요</h2>
@@ -276,6 +368,123 @@
         }
       });
     });
+
+    // 정책 검색 API (로컬 파일로 열었을 때는 배포된 서버를 쓴다)
+    const API = (location.protocol === "file:" ? "https://youthpolicy-ai.vercel.app" : "") + "/api/mcp?tool=";
+
+    async function callApi(tool, body) {
+      const res = await fetch(API + tool, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    }
+
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    function daysLeft(dateText) {
+      if (!dateText) return null;
+      const [y, m, d] = dateText.split(".").map(Number);
+      const end = new Date(y, m - 1, d);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return Math.round((end - today) / 86400000);
+    }
+
+    function policyCard(p, { showDday = false } = {}) {
+      const card = el("article", "pcard");
+      const left = daysLeft(p.마감일);
+      if (showDday && left !== null) card.append(el("span", "dday", left <= 0 ? "오늘 마감" : `D-${left}`));
+      card.append(el("h3", "", p.정책명));
+
+      const badges = el("div", "badges");
+      badges.append(el("span", "badge", p.지역 === "전국" ? "전국" : p.지역.split(" ")[0]));
+      if (p.지원연령 && p.지원연령 !== "제한없음") badges.append(el("span", "badge", p.지원연령));
+      const period = (p.신청기간 || "").split(" (")[0];
+      if (period) badges.append(el("span", left !== null && left <= 7 && left >= 0 ? "badge hot" : "badge", period === "진행중" && left !== null && left >= 0 ? `${p.마감일.slice(5)}까지` : period));
+      card.append(badges);
+
+      if (p.지원내용) card.append(el("p", "", p.지원내용));
+
+      const links = el("div", "links");
+      const detail = el("a", "primary", "자세히 보기");
+      detail.href = p.상세링크;
+      detail.target = "_blank";
+      detail.rel = "noopener";
+      links.append(detail);
+      if (p.신청링크 && /^https?:\/\//.test(p.신청링크)) {
+        const apply = el("a", "secondary", "신청 페이지");
+        apply.href = p.신청링크;
+        apply.target = "_blank";
+        apply.rel = "noopener";
+        links.append(apply);
+      }
+      card.append(links);
+      return card;
+    }
+
+    function skeletons(target, count) {
+      target.replaceChildren(...Array.from({ length: count }, () => el("div", "skeleton")));
+    }
+
+    // 1분 맞춤 찾기
+    const finderForm = document.getElementById("finder-form");
+    const finderResults = document.getElementById("finder-results");
+
+    finderForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(finderForm);
+      const age = Number(form.get("age")) || 0;
+      const region = form.get("region") || "";
+      const keyword = form.get("topic") || "";
+
+      const head = el("div", "results-head");
+      head.append(el("b", "", "찾는 중이에요…"));
+      const grid = el("div", "cards");
+      skeletons(grid, 3);
+      finderResults.replaceChildren(head, grid);
+
+      try {
+        const data = await callApi("search_youth_policies", { keyword, region, age, limit: 6 });
+        const label = [age ? `만 ${age}세` : "", region || "전국", keyword || "전체 분야"].filter(Boolean).join(" · ");
+        head.replaceChildren(el("b", "", `${label} · ${data.결과수}개`));
+        if (!data.결과수) {
+          grid.replaceWith(el("div", "empty", "조건에 맞는 정책을 찾지 못했어요. 분야를 ‘전체’로 바꾸거나 상담원에게 물어보세요."));
+          return;
+        }
+        const ask = el("button", "", "상담원에게 더 물어보기 →");
+        ask.type = "button";
+        ask.addEventListener("click", () => document.querySelector('[data-open="chat"]').click());
+        head.append(ask);
+        grid.replaceChildren(...data.정책.map((p) => policyCard(p)));
+      } catch (err) {
+        head.replaceChildren(el("b", "", "잠시 후 다시 시도해 주세요."));
+        grid.replaceWith(el("div", "empty", "정책 정보를 불러오지 못했어요. 상담원에게 물어보셔도 돼요."));
+      }
+    });
+
+    // 이번 주 마감 임박 (접속할 때마다 최신 공고로 갱신)
+    (async () => {
+      const box = document.getElementById("closing");
+      skeletons(box, 3);
+      try {
+        const data = await callApi("list_closing_soon", { days: 7, limit: 8 });
+        if (!data.결과수) {
+          document.getElementById("closing-section").hidden = true;
+          return;
+        }
+        box.replaceChildren(...data.정책.map((p) => policyCard(p, { showDday: true })));
+      } catch {
+        document.getElementById("closing-section").hidden = true;
+      }
+    })();
   </script>
 </body>
 </html>
